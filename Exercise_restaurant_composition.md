@@ -128,13 +128,12 @@ class FoodItem {
 FoodItem "0..n" <|-- "0..n" Appetizer: is a
 FoodItem "0..n" <|-- "0..n" MainCourse: is a
 FoodItem "0..n" <|-- "0..n" Dessert: is a
+FoodItem "0..n" <|-- "0..n" Soup: is a
 
 class Appetizer {
     +get_discount(): float
     -calculate_discount(): float
 }
-
-Appetizer <|-- Soup: is an
 
 class Soup {
     -bool texture_smooth

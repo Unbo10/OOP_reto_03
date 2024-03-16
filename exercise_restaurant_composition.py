@@ -9,7 +9,7 @@ class MenuItem:
         self._discount: float = 0
 
 class FoodItem(MenuItem):
-    def __init__(self, quantity) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self._is_fried: bool = False
         self._is_spicy: bool = False
@@ -22,9 +22,12 @@ class FoodItem(MenuItem):
         self._shareable_ingredients: list = []
 
     def calculate_discount(self, order) -> None:
-        for i in order.items:
-            if i.name == self.__name:
-                self.__discount += i.price * 0.05
+        summary = order.get_summary()
+        j = -1
+        for i in summary:
+            if i._name == self._name:
+                j += 1
+                self._discount = self._price * (j * 0.025)
     
     def set_name(self, name: str, waiter) -> None:
         self._name = name
@@ -110,18 +113,30 @@ class FoodItem(MenuItem):
 
 class Appetizer(FoodItem):
     def __init__(self) -> None:
-        super().__init__(quantity=1)
+        super().__init__()
         self._name = "Empanadas"
+        self._price = 5
+        self.set_shareable_ingredients(ingredients=["Dough", "Meat", "Onion", "Garlic", "Cumin", "Paprika", "Salt", "Pepper"], password="OOP", waiter=waiter)
+        self._is_vegan = False
+        self._is_vegetarian = False
+        self._is_gluten_free = False
+        self._is_nut_free = True
+        self._is_chef_suggestion = True
     
 
 class Soup(FoodItem):
     def __init__(self) -> None:
-        super().__init__(quantity=1)
+        super().__init__()
         self._name = "Tomato soup"
         self._price = 7
-        self.set_shareable_ingredients(["Tomato", "Onion", "Garlic", "Basil", "Olive oil", "Salt", "Pepper"])
+        self.set_shareable_ingredients(ingredients=["Tomato", "Onion", "Garlic", "Basil", "Olive oil", "Salt", "Pepper"], password="OOP", waiter=waiter)
+        self._is_vegan = True
+        self._is_vegetarian = True
+        self._is_gluten_free = True
+        self._is_nut_free = True
+        self._is_chef_suggestion = False
 
-class MainCourse(MenuItem):
+class MainCourse(FoodItem):
     def __init__(self) -> None:
         super().__init__()
 
@@ -130,7 +145,7 @@ class Pasta(MainCourse):
         super().__init__()
         self._name = "Pasta"
         self._price = 10
-        self._set_shareable_ingredients(["Pasta", "Bolognesa sauce", "Cheese"])
+        self.set_shareable_ingredients(ingredients=["Pasta", "Bolognesa sauce", "Cheese"], password="OOP", waiter=waiter)
         self._is_vegan = False
         self._is_vegetarian = False
         self._is_gluten_free = False
@@ -142,7 +157,7 @@ class Hamburger(MainCourse):
         super().__init__()
         self._name = "Hamburger"
         self._price = 8
-        self.set_shareable_ingredients(["Bread", "Meat", "Lettuce", "Tomato", "Onion", "Cheese", "Ketchup", "Mustard"])
+        self.set_shareable_ingredients(ingredients=["Bread", "Meat", "Lettuce", "Tomato", "Onion", "Cheese", "Ketchup", "Mustard"], password="OOP", waiter=waiter)
         self._is_vegan = False
         self._is_vegetarian = False
         self._is_gluten_free = False
@@ -154,7 +169,7 @@ class Pizza(MainCourse):
         super().__init__()
         self._name = "Pizza"
         self._price = 9
-        self.set_shareable_ingredients(["Dough", "Tomato sauce", "Cheese", "Pepperoni", "Mushrooms", "Onion", "Pepper", "Olive oil"])
+        self.set_shareable_ingredients(ingredients=["Dough", "Tomato sauce", "Cheese", "Pepperoni", "Mushrooms", "Onion", "Pepper", "Olive oil"], password="OOP", waiter=waiter)
         self._is_vegan = False
         self._is_vegetarian = False
         self._is_gluten_free = False
@@ -166,14 +181,14 @@ class HotDog(MainCourse):
         super().__init__()
         self._name = "Hot dog"
         self._price = 6
-        self.set_shareable_ingredients(["Bread", "Sausage", "Ketchup", "Mustard", "Onion"])
+        self.set_shareable_ingredients(ingredients=["Bread", "Sausage", "Ketchup", "Mustard", "Onion"], password="OOP", waiter=waiter)
         self._is_vegan = False
         self._is_vegetarian = False
         self._is_gluten_free = False
         self._is_nut_free = True
         self._is_chef_suggestion = False
 
-class Salad(MenuItem):
+class Salad(FoodItem):
     def __init__(self) -> None:
         super().__init__()
         self._name = "Ceaser Salad"
@@ -183,9 +198,9 @@ class Salad(MenuItem):
         self._is_gluten_free = True
         self._is_nut_free = True
         self._is_chef_suggestion = True
-        self._shareable_ingredients = ["Lettuce", "Croutons", "Parmesan cheese", "Caesar dressing"]
+        self.set_shareable_ingredients(ingredients=["Lettuce", "Croutons", "Parmesan cheese", "Caesar dressing"], password="OOP", waiter=waiter)
 
-class Traditional(MenuItem):
+class Traditional(FoodItem):
     def __init__(self) -> None:
         super().__init__()
         self._name = "Bandeja Paisa"
@@ -195,9 +210,13 @@ class Traditional(MenuItem):
         self._is_gluten_free = False
         self._is_nut_free = True
         self._is_chef_suggestion = True
-        self._shareable_ingredients = ["Rice", "Beans", "Egg", "Pork belly", "Sausage", "Arepa", "Avocado", "Plantain", "Salad"]
+        self.set_shareable_ingredients(ingredients=["Rice", "Beans", "Egg", "Pork belly", "Sausage", "Arepa", "Avocado", "Plantain", "Salad"], password="OOP", waiter=waiter)
 
-class Dessert(MenuItem):
+    def calculate_discount(self, order) -> None:
+        super().calculate_discount(order)
+        self._discount += self._price*(0.05)
+
+class Dessert(FoodItem):
     def __init__(self) -> None:
         super().__init__()
         self._name = "Arroz con leche"
@@ -207,41 +226,13 @@ class Dessert(MenuItem):
         self._is_gluten_free = False
         self._is_nut_free = True
         self._is_chef_suggestion = True
-        self._shareable_ingredients = ["Rice", "Milk", "Sugar", "Cinnamon"]
-        self._secret_ingredients = ["Vanilla", "Condensed milk"]
-    
+        self.set_shareable_ingredients(ingredients=["Rice", "Milk", "Sugar", "Cinnamon"], password="OOP", waiter=waiter)
+        self.set_secret_ingredients(ingredients=["Vanilla", "Condensed milk"], password="OOP", waiter=waiter)
 
-class Order:
-    def __init__(self, items: list) -> None:
-        self.__status: str = ""
-        self.__customer: Customer = None
-        self.__items: list = items
-        self.__summary: list = []
 
-    def calculate_total(self) -> float:
-        total: float = 0
-        for item in self.items:
-            total += item.price
-        return total
-    
-    def set_status(self, status: str) -> None:
-        self.status = status
-
-    def get_satus (self, status: str) -> str:
-        return self.status
-    
-    def add_item(self, item) -> None:
-        self.__items.append(item)
-
-    def set_costumer(self, customer, waiter):
-        self.__customer = customer
-        waiter.add_remove_customer(customer, "add")
-
-    def get_costumer(self):
-        return self.__customer
-    
 class DrinkItem(MenuItem):
     def __init__(self):
+        super().__init__()
         self._is_alcoholic: bool = False
         self._is_carbonated: bool = False
         self._ice: bool = False
@@ -312,7 +303,7 @@ class NonAlcoholic(DrinkItem):
         self._is_alcoholic = False
         self._is_homemade = True
 
-class Water(DrinkItem):
+class Water(NonAlcoholic):
     def __init__(self):
         super().__init__()
         self._name = "Water"
@@ -323,7 +314,7 @@ class Water(DrinkItem):
         self._volume = 0.5
         self._is_tap = True
 
-class Juice(DrinkItem):
+class Juice(NonAlcoholic):
     def __init__(self):
         super().__init__()
         self._name = "Juice"
@@ -334,7 +325,7 @@ class Juice(DrinkItem):
         self._volume = 0.5
         self._is_homemade = True
 
-class TemperanceDrink(DrinkItem):
+class TemperanceDrink(NonAlcoholic):
     def __init__(self):
         super().__init__()
         self._name = "Temperance drink"
@@ -386,6 +377,66 @@ class Cocktail(Alcoholic):
         self._volume = 8
         self._is_homemade = True
     
+
+class Order:
+    def __init__(self, items: list) -> None:
+        self.__status: str = ""
+        self.__customer: Customer = None
+        self.__summary: list = []
+        self.__tip: float = 0
+
+    def print_summary(self) -> list:
+        print(self.__summary)
+        for i in self.__summary:
+            i.calculate_discount(self)
+            print(i._name, end="")
+            print(" $", end="")
+            print(round(i._price - i._discount, 4), end="")
+            if i._discount > 0:
+                print("(-", end="")
+                print(round((i._discount/i._price)*100, 3), end="")
+                print("%)", end=")")
+            print()
+        print("Tip:", order.__tip, end="")
+        print("%")
+
+    def get_summary(self) -> list:
+        return self.__summary
+
+    def calculate_total(self) -> float:
+        total: float = 0
+        for item in self.__summary:
+            item.calculate_discount(self)
+            total += round((item._price - item._discount), 4)
+        total += round(total * (self.__tip / 100), 4)
+        total = round(total, 2)
+        return total
+    
+    def set_status(self, status: str) -> None:
+        self.status = status
+
+    def get_satus (self, status: str) -> str:
+        return self.status
+    
+    def add_item(self, item) -> None:
+        self.__summary.append(item)
+
+    def add_summary(self, item) -> None:
+        self.__summary.append(item)
+
+    def set_tip(self, tip: float) -> None:
+        self.__tip = tip
+
+    def get_tip(self) -> float:
+        return self.__tip
+
+    def set_costumer(self, customer, waiter):
+        self.__customer = customer
+        waiter.add_remove_customer(customer, "add")
+
+    def get_costumer(self):
+        return self.__customer
+    
 class Waiter:
     def __init__(self, wname: str) -> None:
         self.name: str = wname
@@ -412,32 +463,18 @@ class Waiter:
     def bring_order(self, customer) -> None:
         print("Here is your order")
         print("Enjoy your meal! 😊")
-        print("Would you like to ask for the bill? (yes/no)")
-        answer = input()
-        if answer == "yes":
-            print("How much would you like to tip? (Please enter the percentage of the total amount)")
-            tip = input()
-            customer.ask_for_bill(order, self, tip)
-        else:
-            print("Alright! I'll be back in a few minutes")
+        # time = datetime.now()
+        # while (datetime.now() - time).seconds < 5:
+        #     pass
 
-    def calculate_tip(self, order: Order, given_tip: float) -> None:
-        self.__tips += order.calculate_total() * given_tip
+    def calculate_tip(self, order: Order, giv_tip: float) -> None:
+        order.set_tip(giv_tip)
+        self.__tips += order.calculate_total() * (giv_tip / 100)
 
 
 class Customer:
     def __init__(self, name: str, balance: float = 100) -> None:
         self.name: float = name
-    #     self.available_money: float = balance
-    
-    # def pay(self, amount: float) -> None:
-    #     if (self.available_money - amount):
-    #         self.available_money -= amount
-    #         print("Payment was successful, but your card now has a negative balance")
-    #     else:
-    #         self.available_money -= amount
-    #         print("Thank you for coming to Tata's! Your payment was succesful")
-    #         print("Have a nice day! 😊")
 
     def order(self, items: list, waiter: Waiter) -> None:
         order: Order = Order(items)
@@ -447,10 +484,10 @@ class Customer:
         order.status = "closed"
         waiter.calculate_tip(order, tip)
 
-    def pay(self, amount: float, order) -> None:
-        print("Here is your oder summary")
-        for i in order.__summary:
-            print(i)
+    def pay(self, order: Order) -> None:
+        amount = order.calculate_total()
+        print("Here is your oder summary: ")
+        order.print_summary()
         print("Your total is: {}".format(amount))
         print("How would you like to pay? (card/cash)")
         payment = input()
@@ -506,65 +543,96 @@ if __name__ == "__main__":
     done_ordering: bool = False
     items: list = []
     i = -1
+    print("What would you like to order? (Please enter the number of the item you want to order. To finish your order type non-numerical characters): ")
     while (not done_ordering):
-        i += 1
-        print("What would you like to order? (Please enter the number of the item you want to order. To finish your order type non-numerical characters): ")
-        item = input()
-        if (input().isdigit()):
+        item = input("")
+        if (item.isdigit()):
             if item == "1":
-                item[1] = Appetizer()
-                order.__summary.append([item[1].name, item[1].price])
+                items.append(Appetizer())
+                order.add_summary(items[i])
+                i += 1
             elif item == "2":
-                item[2] = Soup()
-                order.__summary.append([item[2].name, item[2].price])
+                items.append(Soup())
+                order.add_summary(items[i])
+                i += 1
             elif item == "3":
-                item[3] = Pasta()
-                order.__summary.append([item[3].name, item[3].price])
+                items.append(Pasta())
+                order.add_summary(items[i])
+                i += 1
             elif item == "4":
-                item[4] = Hamburger()
-                order.__summary.append([item[4].name, item[4].price])
+                items.append(Hamburger())
+                order.add_summary(items[i])
+                i += 1
             elif item == "5":
-                item[5] = Pizza()
-                order.__summary.append([item[5].name, item[5].price])
+                items.append(Pizza())
+                order.add_summary(items[i])
+                i += 1
             elif item == "6":
-                item[6] = HotDog()
-                order.__summary.append([item[6].name, item[6].price])
+                items.append(HotDog())
+                order.add_summary(items[i])
+                i += 1
             elif item == "7":
-                item[7] = Salad()
-                order.__summary.append([item[7].name, item[7].price])
+                items.append(Salad())
+                order.add_summary(items[i])
+                i += 1
             elif item == "8":
-                item[8] = Traditional()
-                order.__summary.append([item[8].name, item[8].price])
+                items.append(Traditional())
+                order.add_summary(items[i])
+                i += 1
             elif item == "9":
-                item[9] = Dessert()
-                order.__summary.append([item[9].name, item[9].price])
+                items.append(Dessert())
+                order.add_summary(items[i])
+                i += 1
             elif item == "10":
-                item[10] = Water()
-                order.__summary.append([item[10].name, item[10].price])
+                items.append(Water())
+                order.add_summary(items[i])
+                i += 1
             elif item == "11":
-                item[11] = Juice()
-                order.__summary.append([item[11].name, item[11].price])
+                items.append(Juice())
+                order.add_summary(items[i])
+                i += 1
             elif item == "12":
-                item[12] = TemperanceDrink()
-                order.__summary.append([item[12].name, item[12].price])
+                items.append(TemperanceDrink())
+                order.add_summary(items[i])
+                i += 1
             elif item == "13":
-                item[13] = Beer()
-                order.__summary.append([item[13].name, item[13].price])
+                items.append(Beer())
+                order.add_summary(items[i])
+                i += 1
             elif item == "14":
-                item[14] = Wine()
-                order.__summary.append([item[14].name, item[14].price])
+                items.append(Wine())
+                order.add_summary(items[i])
+                i += 1
             elif item == "15":
-                item[15] = Cocktail()
-                order.__summary.append([item[15].name, item[15].price])
+                items.append(Cocktail())
+                order.add_summary(items[i])
+                i += 1
             else:
                 print("Invalid item")
-        print("Alright! I'll bring your order right away")
-        time = datetime.now()
-        while (datetime.now() - time).seconds < 5:
-            pass
-        waiter.bring_order(customer)
-        waiter.calculate_tip(order, 0.1)
-        customer.pay(order.calculate_total())
+        else:
+            done_ordering = True
+
+    print("Alright! I'll bring your order right away")
+    # time = datetime.now()
+    # while (datetime.now() - time).seconds < 5:
+    #     pass
+    waiter.bring_order(customer)
+    bill = ""
+    i = 1
+    while bill != "yes":
+        print("Will you like your bill? (yes/no)")
+        bill = input()
+        if bill != "yes":
+            print("Alright! I'll be back in a few minutes")
+            # time = datetime.now()
+            # while (datetime.now() - time).seconds < i * 5:
+            #     pass
+            i += 1
+    print("How much would you like to tip? (Please enter the percentage of the total)")
+    tip = float(input())
+    customer.ask_for_bill(order, waiter, tip)
+    waiter.calculate_tip(order, tip)
+    customer.pay(order=order)
 
 
 
