@@ -225,47 +225,44 @@ class Order:
         self.__item_codes: dict = {1: lambda: Empanada(), 2: lambda: CheeseStick(), 3: lambda: Pasta(), 4: lambda: Hamburger(), 5: lambda: Pizza(), 6: lambda: HotDog(), 7: lambda: Salad(), 8: lambda: ArrozConLeche(), 9: lambda: IceCream(), 10: lambda: Water(), 11: lambda: Juice(), 12: lambda: Soda(), 13: lambda: Beer(), 14: lambda: Wine(), 15: lambda: Cocktail()} # * So that a new instance of the classes is created every time an item is added to the order
 
     def print_menu(self) -> None:
-        appetizer_items: list[Appetizer] = [Empanada(), CheeseStick()]
-        main_course_items: list[MainCourse] = [Pasta(), Hamburger(), Pizza(), HotDog()]
-        salad_items: list[Salad] = [Salad()]
-        dessert_items: list[Dessert] = [ArrozConLeche(), IceCream()]
-        non_alcoholic_drink_items: list[NonAlcoholic] = [Water(), Juice(), Soda()]
-        alcoholic_drink_items: list[Alcoholic] = [Beer(), Wine(), Cocktail()]
+        base_order: Order = Order()
+        for i in range(1, 16):
+            base_order.add_item(i)
+        order_iterator: OrderIterator = OrderIterator(base_order)
         print()
         print("---APPETIZERS---")
-        for item in appetizer_items:
-            print(f"{item.get_code()}. {item.get_name()} | ${item.get_price()}")
-            print("    -", item.get_description())
+        for item in order_iterator:    
+            if item.get_code() <= 10:
+                print(f"{item.get_code()}. {item.get_name()} | ${item.get_price()}")
+                print("    -", item.get_description())
 
-        print()
-        print("---MAIN COURSE---")
-        for item in main_course_items:
-            print(f"{item.get_code()}. {item.get_name()} | ${item.get_price()}")
-            print("    -", item.get_description())
-        
-        print()
-        print("---SALADS---")
-        for item in salad_items:
-            print(f"{item.get_code()}. {item.get_name()} | ${item.get_price()}")
-            print("    -", item.get_description())
+            elif item.get_code() <= 12:
+                print(f"{item.get_code()}. {item.get_name()} | ${item.get_price()}")
+                print(f"    - {item.get_description()} | brand: {item.get_brand()} | volume:", f"{item.get_volume()} ml")
 
-        print()
-        print("---DESSERTS---")
-        for item in dessert_items:
-            print(f"{item.get_code()}. {item.get_name()} | ${item.get_price()}")
-            print("    -", item.get_description())
+            elif item.get_code() <= 15:
+                print(f"{item.get_code()}. {item.get_name()} | ${item.get_price()}")
+                print(f"    - {item.get_description()} | brand: {item.get_brand()} | volume:", f"{item.get_volume()} ml | alcohol percentage: {item.get_alcohol_percentage()}%")
 
-        print()
-        print("---NON-ALCOHOLIC DRINKS---")
-        for item in non_alcoholic_drink_items:
-            print(f"{item.get_code()}. {item.get_name()} | ${item.get_price()}")
-            print(f"    - {item.get_description()} | brand: {item.get_brand()} | volume:", f"{item.get_volume()} ml")
+            if item.get_code() == 2:
+                print()
+                print("---MAIN COURSE---")
 
-        print()
-        print("---ALCOHOLIC DRINKS---")
-        for item in alcoholic_drink_items:
-            print(f"{item.get_code()}. {item.get_name()} | ${item.get_price()}")
-            print(f"    - {item.get_description()} | brand: {item.get_brand()} | volume:", f"{item.get_volume()} ml | alcohol percentage: {item.get_alcohol_percentage()}%")
+            if item.get_code() == 6:
+                print()
+                print("---SALADS---")
+
+            if item.get_code() == 7:
+                print()
+                print("---DESSERTS---")
+
+            if item.get_code() == 9:
+                print()
+                print("---NON-ALCOHOLIC DRINKS---")
+
+            if item.get_code() == 12:
+                print()
+                print("---ALCOHOLIC DRINKS---")
             
     def add_item(self, item_code: int) -> None:
         self.__items.append(self.__item_codes[item_code]())
@@ -339,6 +336,24 @@ class Order:
     def set_tip(self, tip: float) -> None:
         self.__tip = tip
 
+class OrderIterator():
+    def __init__(self, order: Order) -> None:
+        self.__items: list[FoodItem] =  order.get_items()
+        self.__index: int = 0
+        self.__next: FoodItem = list[0]
+
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        try:
+            self.__next = self.__items[self.__index]
+            self.__index += 1
+            return self.__next
+        except IndexError:
+            print("*Iteration stopped*")
+            raise StopIteration
+
 if __name__ == "__main__":
     try:
         print("🎉🎉 Welcome to Tata's!! 🎉🎉")
@@ -399,7 +414,6 @@ if __name__ == "__main__":
                 valid_tip = True
         order.print_order(float(tip))
         order.set_status("Closed")
-        # TODO: Check if exception implementation is the challenge 6 and then deal with iterables.
     except KeyboardInterrupt:
         print()
         print("See you later!")
