@@ -1,4 +1,4 @@
-# OOP_reto_05
+# Challenge 7
 
 # Restaurant: 
 

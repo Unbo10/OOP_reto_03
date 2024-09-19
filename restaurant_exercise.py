@@ -228,10 +228,9 @@ class Order:
         base_order: Order = Order()
         for i in range(1, 16):
             base_order.add_item(i)
-        order_iterator: OrderIterator = OrderIterator(base_order)
         print()
         print("---APPETIZERS---")
-        for item in order_iterator:    
+        for item in base_order:    
             if item.get_code() <= 10:
                 print(f"{item.get_code()}. {item.get_name()} | ${item.get_price()}")
                 print("    -", item.get_description())
@@ -336,22 +335,23 @@ class Order:
     def set_tip(self, tip: float) -> None:
         self.__tip = tip
 
+    def __iter__(self):
+        return OrderIterator(self)
+
 class OrderIterator():
     def __init__(self, order: Order) -> None:
         self.__items: list[FoodItem] =  order.get_items()
         self.__index: int = 0
-        self.__next: FoodItem = list[0]
 
-    def __iter__(self):
+    def __iter__(self) -> "OrderIterator":
         return self
     
-    def __next__(self):
+    def __next__(self) -> FoodItem:
         try:
-            self.__next = self.__items[self.__index]
+            next: FoodItem = self.__items[self.__index]
             self.__index += 1
-            return self.__next
+            return next
         except IndexError:
-            print("*Iteration stopped*")
             raise StopIteration
 
 if __name__ == "__main__":
@@ -375,6 +375,7 @@ if __name__ == "__main__":
         order.set_customer_name(customer_name)
         order.print_menu()
         done_ordering: bool = False
+        print()
         print("Please enter the number of the item you want to order. To finish your order type non-numerical characters")
         while not done_ordering:
             try:
@@ -392,13 +393,13 @@ if __name__ == "__main__":
         print("Alright! I'll bring your order right away")
 
         time = datetime.now()
-        # while (datetime.now() - time).seconds < 5:
-            # pass
+        while (datetime.now() - time).seconds < 3:
+            pass
         print("Here is your order! Enjoy your meal!")
         print("I will bring you the bill once you're ready")
         time = datetime.now()
-        # while (datetime.now() - time).seconds < 10:
-        #     pass
+        while (datetime.now() - time).seconds < 5:
+            pass
         print("How much would you like to tip? (Please enter the percentage of the total)")
         valid_tip: bool = False
         while valid_tip == False:
